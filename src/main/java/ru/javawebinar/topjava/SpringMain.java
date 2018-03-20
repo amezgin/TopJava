@@ -16,5 +16,9 @@ public class SpringMain {
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             adminUserController.create(new User(null, "userName", "email", "password", Role.ROLE_ADMIN));
         }
+//        InMemoryMealRepositoryImpl repository = new InMemoryMealRepositoryImpl();
+//        for (Meal meal : repository.getAll(null) ){
+//            System.out.println(meal + "    " + meal.getDateTime());
+//        }
     }
 }
