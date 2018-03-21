@@ -1,11 +1,12 @@
 package ru.javawebinar.topjava.repository.mock;
 
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -20,12 +21,12 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(meal -> save(meal, AuthorizedUser.id()));
+        MealsUtil.MEALS.forEach(meal -> save(meal, 1));
     }
 
     @Override
     public Meal save(Meal meal, Integer userId) {
-            meal.setUserId(userId);
+        meal.setUserId(userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             repository.put(meal.getId(), meal);
@@ -57,17 +58,31 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     @Override
     public List<Meal> getAll(Integer userId) {
         List<Meal> result = new LinkedList<>();
-        for (Meal meal: repository.values()) {
+        for (Meal meal : repository.values()) {
             if (meal.getUserId() == userId) {
                 result.add(meal);
             }
         }
-        Collections.sort(result, new Comparator<Meal>() {
-            @Override
-            public int compare(Meal o1, Meal o2) {
-                return o2.getDateTime().compareTo(o1.getDateTime());
-            }
-        });
+        Collections.sort(result, dateTime);
         return result;
     }
+
+    @Override
+    public List<Meal> getBetweenDates(LocalDate startDate, LocalDate endDate, Integer userId) {
+        List<Meal> result = new LinkedList<>();
+        for (Meal meal : repository.values()) {
+            if (meal.getUserId() == userId && DateTimeUtil.isBetween(meal.getDate(), startDate, endDate)) {
+                result.add(meal);
+            }
+        }
+        Collections.sort(result, dateTime);
+        return result;
+    }
+
+    private Comparator<Meal> dateTime = new Comparator<Meal>() {
+        @Override
+        public int compare(Meal o1, Meal o2) {
+            return o2.getDateTime().compareTo(o1.getDateTime());
+        }
+    };
 }

@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -42,5 +43,10 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<Meal> getAll(Integer userId) {
         return this.repository.getAll(userId);
+    }
+
+    @Override
+    public List<Meal> getBetweenDates(LocalDate startDate, LocalDate endDate, Integer userId) {
+        return this.repository.getBetweenDates(startDate, endDate, userId);
     }
 }
